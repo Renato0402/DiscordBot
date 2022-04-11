@@ -24,3 +24,6 @@ testebot-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/
+
+# Bot Key
+config/config.exs
