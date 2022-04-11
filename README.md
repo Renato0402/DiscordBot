@@ -1,4 +1,4 @@
-# Testebot
+# Bot para Discord feito em Elixir
 
 **TODO: Add description**
 
