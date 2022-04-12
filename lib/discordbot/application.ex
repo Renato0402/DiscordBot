@@ -8,6 +8,7 @@ defmodule Discordbot.Application do
   @impl true
   def start(_type, _args) do
     children = [
+      Discordbot.Consumer
       # Starts a worker by calling: Discordbot.Worker.start_link(arg)
       # {Discordbot.Worker, arg}
     ]

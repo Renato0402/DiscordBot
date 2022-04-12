@@ -1,9 +1,17 @@
 # Bot para Discord feito em Elixir
 
+## Como Instalar as Dependencias
+
+Utilize o comando "mix deps.get" no seu terminal.
+
 ## Como Rodar o Bot
 
+Utilize o comando "mix run --no-halt" no seu terminal.
+
+## Comandos Disponiveis
+
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `testebot` to your list of dependencies in `mix.exs`:
+by adding `discordbot` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
@@ -12,6 +20,4 @@ def deps do
   ]
 end
 ```
-
-## Comandos Disponiveis
 
