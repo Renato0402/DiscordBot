@@ -26,4 +26,4 @@ testebot-*.tar
 /tmp/
 
 # Bot Token
-config.exs
+config/config.exs
