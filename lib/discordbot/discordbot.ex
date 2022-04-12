@@ -35,7 +35,7 @@ defmodule Discordbot.Consumer do
       # Quebrando em comando/parametros
       aux = String.split(msg.content, " ", parts: 2)
 
-      game = Enum.fetch!(aux, 1)
+      game = Enum.fetch!(aux,1)
 
       response = HTTPoison.get!("http://api.steampowered.com/ISteamApps/GetAppList/v0002/?format=json")
 
