@@ -2,7 +2,8 @@
 
 ## Como Instalar as Dependencias
 
-Adicione o token do seu bot na variável **token** no **config-example.exs**
+Adicione o token do seu bot na variável "**token**" no "**config-example.exs**"
+
 Utilize o comando "mix deps.get" no seu terminal.
 
 ## Como Rodar o Bot
