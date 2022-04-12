@@ -1,9 +1,9 @@
-defmodule Testebot.MixProject do
+defmodule Discordbot.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :testebot,
+      app: :discordbot,
       version: "0.1.0",
       elixir: "~> 1.13",
       start_permanent: Mix.env() == :prod,
@@ -15,7 +15,7 @@ defmodule Testebot.MixProject do
   def application do
     [
       extra_applications: [:logger],
-      mod: {Testebot.Application, []}
+      mod: {Discordbot.Application, []}
     ]
   end
 

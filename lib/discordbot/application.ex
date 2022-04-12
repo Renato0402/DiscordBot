@@ -1,4 +1,4 @@
-defmodule Testebot.Application do
+defmodule Discordbot.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   @moduledoc false
@@ -8,14 +8,13 @@ defmodule Testebot.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      Testebot.Consumer
-      # Starts a worker by calling: Testebot.Worker.start_link(arg)
-      # {Testebot.Worker, arg}
+      # Starts a worker by calling: Discordbot.Worker.start_link(arg)
+      # {Discordbot.Worker, arg}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: Testebot.Supervisor]
+    opts = [strategy: :one_for_one, name: Discordbot.Supervisor]
     Supervisor.start_link(children, opts)
   end
 end
