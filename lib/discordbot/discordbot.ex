@@ -15,7 +15,9 @@ defmodule Discordbot.Consumer do
 
         # API Valorant
 
-        msg.content == "!valorant" -> valorant(msg)
+        String.starts_with?(msg.content, "!valorant ") -> valorant(msg)
+
+        msg.content == "!valorant" -> Api.create_message(msg.channel_id, "Use **!valorant <nome do agente>** para descobir o significado da palavra.")
 
         #API Words
 
@@ -48,7 +50,12 @@ defmodule Discordbot.Consumer do
 
     defp valorant(msg) do
 
-      response = HTTPoison.get!("https://valorant-agents-maps-arsenal.p.rapidapi.com/agents/pt-br", [{"X-RapidAPI-Host", "valorant-agents-maps-arsenal.p.rapidapi.com"} , {"X-RapidAPI-Key", "125e6ae7ebmsh36882299b848d27p150e1ajsnd54c607719e4"}])
+      # Quebrando em comando/parametros
+      aux = String.split(msg.content, " ", parts: 2)
+
+      agente = Enum.fetch!(aux,1)
+
+      response = HTTPoison.get!("https://valorant-agents-maps-arsenal.p.rapidapi.com/agents/pt-br", [{"X-RapidAPI-Host", "valorant-agents-maps-arsenal.p.rapidapi.com"} , {"X-RapidAPI-Key", "125e6ae7ebmsh36882299b848d27p150e1ajsnd54c607719e4"}], params: [{"name", String.capitalize(agente)}])
 
       {:ok ,values} = Poison.decode(response.body)
 
@@ -57,7 +64,7 @@ defmodule Discordbot.Consumer do
       Enum.each(agentes,
        fn x ->
 
-        Api.create_message(msg.channel_id, agentes["title"])
+        Api.create_message(msg.channel_id, x["description"])
 
         end
         )
