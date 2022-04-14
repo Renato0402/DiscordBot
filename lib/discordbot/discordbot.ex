@@ -125,8 +125,6 @@ defmodule Discordbot.Consumer do
 
               getPriceById(msg,x["name"] ,x["appid"])
 
-
-
          end
         end
         )
