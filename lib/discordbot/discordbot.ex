@@ -123,7 +123,7 @@ defmodule Discordbot.Consumer do
        fn x ->
         if String.downcase(x["name"]) == String.downcase(game) do
 
-              getPriceById(msg,x["name"],x["appid"])
+              getPriceById(msg,x["name"] ,x["appid"])
 
 
 
