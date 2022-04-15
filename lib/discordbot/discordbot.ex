@@ -14,11 +14,17 @@ defmodule Discordbot.Consumer do
 
         # COMANDOS
 
+        # API Nba
+
+        String.starts_with?(msg.content, "!nba ") -> nbaID(msg)
+
+        msg.content == "!nba" -> Api.create_message(msg.channel_id, "Use **!nba <nome do jogador> <sobrenome do jogador>** para descobir seus stats na temporada atual.")
+
         # API Valorant
 
         String.starts_with?(msg.content, "!valorant ") -> valorant(msg)
 
-        msg.content == "!valorant" -> Api.create_message(msg.channel_id, "Use **!valorant <nome do agente>** para descobir o significado da palavra.")
+        msg.content == "!valorant" -> Api.create_message(msg.channel_id, "Use **!valorant <nome do agente>** para descobir a descrição do agente no Valorant.")
 
         #API Words
 
@@ -49,6 +55,68 @@ defmodule Discordbot.Consumer do
 
     end
 
+    defp nbaID(msg) do
+
+      # Quebrando em comando/parametros
+      aux = String.split(msg.content, " ")
+
+      if Enum.count(aux) > 2 do
+
+        playerName = Enum.fetch!(aux,1)
+
+        playerLastName = Enum.fetch!(aux,2)
+
+        response = HTTPoison.get!("https://www.balldontlie.io/api/v1/players?search=#{playerName}%20#{playerLastName}&season=2021")
+
+        {:ok ,values} = Poison.decode(response.body)
+
+        achou = Enum.find_value(values["data"],
+       fn x ->
+
+        playerID = x["id"]
+
+        nbaStats(msg, playerID)
+
+        end
+        )
+
+        if achou == nil, do: Api.create_message(msg.channel_id, "Jogador não encontrado na API.")
+
+      else
+
+        Api.create_message(msg.channel_id, "Favor inserir nome e sobrenome do jogador desejado")
+
+      end
+
+    end
+
+    defp nbaStats(msg, id) do
+
+      response = HTTPoison.get!("https://www.balldontlie.io/api/v1/season_averages?season=2021&player_ids[]=#{id}")
+
+      {:ok ,values} = Poison.decode(response.body)
+
+      Enum.each(values["data"],
+       fn x ->
+
+        pontos = x["pts"]
+
+        rebotes = x["reb"]
+
+        ass = x["ast"]
+
+        roubos = x["stl"]
+
+        blocks = x["blk"]
+
+        Api.create_message(msg.channel_id, "Estatisticas do jogador na Temporada 2021:\n\nPontos por jogo: **#{pontos}**\nRebotes por jogo: **#{rebotes}**\nAssistencias por jogo: **#{ass}**\nRoubos por jogo: **#{roubos}**\nBloqueios por jogo: **#{blocks}**")
+
+        end
+        )
+
+
+    end
+
     defp valorant(msg) do
 
       # Quebrando em comando/parametros
@@ -56,19 +124,23 @@ defmodule Discordbot.Consumer do
 
       agente = Enum.fetch!(aux,1)
 
-      response = HTTPoison.get!("https://valorant-agents-maps-arsenal.p.rapidapi.com/agents/pt-br", [{"X-RapidAPI-Host", "valorant-agents-maps-arsenal.p.rapidapi.com"} , {"X-RapidAPI-Key", "125e6ae7ebmsh36882299b848d27p150e1ajsnd54c607719e4"}], params: [{"name", String.capitalize(agente)}])
+      response = HTTPoison.get!("https://valorant-agents-maps-arsenal.p.rapidapi.com/agents/pt-br", [{"X-RapidAPI-Host", "valorant-agents-maps-arsenal.p.rapidapi.com"} , {"X-RapidAPI-Key", "51e1c6efeemshd72c905ddd7e1f8p17b9b9jsnfcb06362662e"}], params: [{"name", String.capitalize(agente)}])
 
       {:ok ,values} = Poison.decode(response.body)
 
       agentes = values["agents"]
 
-      Enum.each(agentes,
+      achou = Enum.find_value(agentes,
        fn x ->
 
-        Api.create_message(msg.channel_id, x["description"])
+        description = x["description"]
+
+        Api.create_message(msg.channel_id, description)
 
         end
         )
+
+        if achou == nil ,do: Api.create_message(msg.channel_id, "**Agente não encontrado pela API.**")
 
     end
 
