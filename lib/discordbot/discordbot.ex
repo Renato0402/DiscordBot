@@ -14,6 +14,18 @@ defmodule Discordbot.Consumer do
 
         # COMANDOS
 
+        # API Dicionário
+
+        String.starts_with?(msg.content, "!dicionario ") -> dicionario(msg)
+
+        msg.content == "!dicionario" -> Api.create_message(msg.channel_id, "Use **!dicionario <palavra em português>** para descobir o significado da palavra desejada.")
+
+        # API Covid-19
+
+        String.starts_with?(msg.content, "!covid ") -> covidCases(msg)
+
+        msg.content == "!covid" -> Api.create_message(msg.channel_id, "Use **!covid <nome do país em Ingles>** para descobir a situação da covid-19 no país escolhido.")
+
         # API Nba
 
         String.starts_with?(msg.content, "!nba ") -> nbaID(msg)
@@ -50,6 +62,69 @@ defmodule Discordbot.Consumer do
 
         # Nada
         true -> :ignore
+
+      end
+
+    end
+
+    defp dicionario(msg) do
+
+      # Quebrando em comando/parametros
+      aux = String.split(msg.content, " ", parts: 2)
+
+      word = Enum.fetch!(aux,1)
+
+      response = HTTPoison.get!("https://significado.herokuapp.com/v2/#{word}")
+
+      {:ok ,values} = Poison.decode(response.body)
+
+      exists = Enum.each(values, fn x ->
+
+        if is_map(x) do
+
+          meanings = x["meanings"]
+
+          Api.create_message(msg.channel_id, "Significado de **#{word}**:\n")
+
+          Enum.each(meanings, fn meaning -> Api.create_message(msg.channel_id, "#{meaning}\n")end)
+
+        else
+
+          Api.create_message(msg.channel_id, "Palavra não encontrada na API.")
+
+        end
+       end)
+
+    end
+
+    defp covidCases(msg) do
+
+      # Quebrando em comando/parametros
+      aux = String.split(msg.content, " ", parts: 2)
+
+      country = Enum.fetch!(aux,1)
+
+      response = HTTPoison.get!("https://covid-api.mmediagroup.fr/v1/cases?country=#{country}")
+
+      {:ok ,values} = Poison.decode(response.body)
+
+      if Enum.count(values) < 199 do
+
+        IO.puts(Enum.count(values))
+
+        all = values["All"]
+
+        cases = all["confirmed"]
+
+        recovered = all["recovered"]
+
+        deaths = all["deaths"]
+
+        Api.create_message(msg.channel_id, "**#{country}:**\nCasos confirmados: #{cases}\nMortes: #{deaths}")
+
+      else
+
+        Api.create_message(msg.channel_id, "País não encontrado na API.")
 
       end
 
