@@ -4,7 +4,7 @@
 
 Adicione o token do seu bot na variável "**token**" no arquivo "**config-example.exs**"
 
-Utilize o comando **mix deps.get** no seu terminal.
+Utilize o comando "**mix deps.get**" no seu terminal.
 
 ## Como Rodar o Bot
 
