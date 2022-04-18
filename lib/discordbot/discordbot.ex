@@ -38,21 +38,29 @@ defmodule Discordbot.Consumer do
 
         msg.content == "!valorant" -> Api.create_message(msg.channel_id, "Use **!valorant <nome do agente>** para descobir a descrição do agente no Valorant.")
 
-        #API Words
-
-        String.starts_with?(msg.content, "!words ") -> wordsDefinition(msg)
-
-        msg.content == "!words" -> Api.create_message(msg.channel_id, "Use **!words <palavra>** para descobir o significado da palavra.")
-
-        #API tabela serie A
-
-        msg.content == "!brasileirao" -> brasileirao(msg)
-
         # API preço de jogos
 
         String.starts_with?(msg.content, "!gameprice ") -> gamePrice(msg)
 
         msg.content == "!gameprice" -> Api.create_message(msg.channel_id, "Use **!gameprice <nome do jogo>** para descobir o preço do jogo na Steam.")
+
+        # API Rick and Morty Episode
+
+        String.starts_with?(msg.content, "!rickmortyEP ") -> rickAndMortyEP(msg)
+
+        msg.content == "!rickmortyEP" -> Api.create_message(msg.channel_id, "Use **!rickmortyEP <numero do episodio>** para saber o nome do episodio de Rick and Morty.")
+
+        # API Rick and Morty Character
+
+        String.starts_with?(msg.content, "!rickmortyCH ") -> rickAndMortyCH(msg)
+
+        msg.content == "!rickmortyCH" -> Api.create_message(msg.channel_id, "Use **!rickmortyCH <nome do personagem>** para ver quem é personagem de Rick and Morty.")
+
+        # API Frutas
+
+        String.starts_with?(msg.content, "!fruits ") -> fruits(msg)
+
+        msg.content == "!fruits" -> Api.create_message(msg.channel_id, "Use **!dicionario <palavra em português>** para descobir o significado da palavra desejada.")
 
         # Listar comandos existentes
         msg.content == "!comandos" -> Api.create_message(msg.channel_id, "Os comandos existentes no bot são: **!gameprice**, **...**")
@@ -64,6 +72,87 @@ defmodule Discordbot.Consumer do
         true -> :ignore
 
       end
+
+    end
+
+    defp fruits(msg) do
+
+      # Quebrando em comando/parametros
+      aux = String.split(msg.content, " ", parts: 2)
+
+      fruit = Enum.fetch!(aux,1)
+
+      response = HTTPoison.get!("https://www.fruityvice.com/api/fruit/#{fruit}")
+
+      {:ok ,values} = Poison.decode(response.body)
+
+      if Enum.count(values) > 1 do
+
+        Api.create_message(msg.channel_id, "**#{fruit}**:")
+
+        nutritionValues = values["nutritions"]
+
+        Enum.each(nutritionValues, fn nutritionValue -> Api.create_message(msg.channel_id, "#{nutritionValue}\n")end)
+
+      else
+
+        Api.create_message(msg.channel_id, "Fruta não encontrada na API.")
+
+      end
+
+    end
+
+    defp rickAndMortyEP(msg) do
+
+      # Quebrando em comando/parametros
+      aux = String.split(msg.content, " ", parts: 2)
+
+      episode = Enum.fetch!(aux,1)
+
+      response = HTTPoison.get!("https://rickandmortyapi.com/api/episode/#{episode}")
+
+      {:ok ,values} = Poison.decode(response.body)
+
+      if Enum.count(values) > 1 do
+
+        episodeName = values["name"]
+
+        Api.create_message(msg.channel_id, "**Episode #{episode}**: #{episodeName}")
+
+      else
+
+        Api.create_message(msg.channel_id, "Episodio não encontrado na API.")
+
+      end
+
+    end
+
+    defp rickAndMortyCH(msg) do
+
+      # Quebrando em comando/parametros
+      aux = String.split(msg.content, " ", parts: 2)
+
+      character = Enum.fetch!(aux,1)
+
+      response = HTTPoison.get!("https://rickandmortyapi.com/api/character")
+
+      {:ok ,values} = Poison.decode(response.body)
+
+      results = values["results"]
+
+      Enum.each(results, fn x ->
+
+        name = x["name"]
+
+        if name == character do
+
+          url = x["image"]
+
+          Api.create_message(msg.channel_id, "**#{character}**: #{url}")
+
+        end
+
+      end)
 
     end
 
@@ -93,7 +182,7 @@ defmodule Discordbot.Consumer do
           Api.create_message(msg.channel_id, "Palavra não encontrada na API.")
 
         end
-       end)
+      end)
 
     end
 
@@ -219,37 +308,6 @@ defmodule Discordbot.Consumer do
 
     end
 
-    defp wordsDefinition(msg) do
-
-      # Quebrando em comando/parametros
-      aux = String.split(msg.content, " ", parts: 2)
-
-      word = Enum.fetch!(aux,1)
-
-      response = HTTPoison.get!("https://wordsapiv1.p.rapidapi.com/words/#{word}/definitions", [{"X-RapidAPI-Host", "wordsapiv1.p.rapidapi.com"} , {"X-RapidAPI-Key", "125e6ae7ebmsh36882299b848d27p150e1ajsnd54c607719e4"}])
-
-      {:ok ,values} = Poison.decode(response.body)
-
-      definition = values["definitions"]["definition"]
-
-      Api.create_message(msg.channel_id, "Definition of #{word}: #{definition}")
-
-      IO.puts(values)
-
-    end
-
-    defp brasileirao(msg) do
-
-      apiKey = "Bearer test_f7f9ad174fbd9cc5fe15e00edc0efb"
-
-      response = HTTPoison.get!("https://api.api-futebol.com.br/v1/campeonatos/10/fases/168", [{"Authorization", apiKey}])
-
-      {:ok ,values} = Poison.decode(response.body)
-
-      IO.puts(values)
-
-    end
-
     defp gamePrice(msg) do
 
       # Quebrando em comando/parametros
@@ -297,6 +355,5 @@ defmodule Discordbot.Consumer do
   def handle_event(_event) do
     :noop
   end
-
 
 end
