@@ -88,11 +88,21 @@ defmodule Discordbot.Consumer do
 
       if Enum.count(values) > 1 do
 
-        Api.create_message(msg.channel_id, "**#{fruit}**:")
+        Api.create_message(msg.channel_id, "For 100 grams of **#{fruit}**:\n")
 
         nutritionValues = values["nutritions"]
 
-        Enum.each(nutritionValues, fn nutritionValue -> Api.create_message(msg.channel_id, "#{nutritionValue}\n")end)
+        carbo = nutritionValues["carbohydrates"]
+
+        protein = nutritionValues["protein"]
+
+        fat = nutritionValues["fat"]
+
+        calories = nutritionValues["calories"]
+
+        sugar = nutritionValues["sugar"]
+
+        Api.create_message(msg.channel_id, "Carbohydrates: #{carbo}\nProtein: #{protein}\nFat: #{fat}\nCalories: #{calories}\nSugar: #{sugar}")
 
       else
 
@@ -140,7 +150,7 @@ defmodule Discordbot.Consumer do
 
       results = values["results"]
 
-      Enum.each(results, fn x ->
+      achou = Enum.find_value(results, fn x ->
 
         name = x["name"]
 
@@ -153,6 +163,8 @@ defmodule Discordbot.Consumer do
         end
 
       end)
+
+      if achou == nil, do: Api.create_message(msg.channel_id, "Personagem não encontrado na API.")
 
     end
 
