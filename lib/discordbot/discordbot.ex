@@ -62,6 +62,12 @@ defmodule Discordbot.Consumer do
 
         msg.content == "!fruits" -> Api.create_message(msg.channel_id, "Use **!dicionario <palavra em português>** para descobir o significado da palavra desejada.")
 
+        # API Brasileirão
+
+        String.starts_with?(msg.content, "!brasileirao ") -> brasileirao(msg)
+
+        msg.content == "!brasileirao" -> Api.create_message(msg.channel_id, "Use **!brasileirao <nome do time da serie A>** para ver o escudo do time desejado.")
+
         # Listar comandos existentes
         msg.content == "!comandos" -> Api.create_message(msg.channel_id, "Os comandos existentes no bot são: **!gameprice**, **...**")
 
@@ -72,6 +78,42 @@ defmodule Discordbot.Consumer do
         true -> :ignore
 
       end
+
+    end
+
+    defp brasileirao(msg) do
+
+      # Quebrando em comando/parametros
+      aux = String.split(msg.content, " ", parts: 2)
+
+      team = Enum.fetch!(aux,1)
+
+      response = HTTPoison.get!("https://api-football-standings.azharimm.site/leagues/bra.1/standings?season=2022&sort=asc")
+
+      {:ok ,values} = Poison.decode(response.body)
+
+      data = values["data"]
+
+      standings = data["standings"]
+
+      achou = Enum.find_value(standings, fn std ->
+
+         teamResponse = std["team"]
+
+         if teamResponse["name"] == String.capitalize(team) do
+
+            Enum.each(teamResponse["logos"], fn logo ->
+
+              Api.create_message(msg.channel_id, "**#{String.capitalize(team)}**:")
+              Api.create_message(msg.channel_id, logo["href"])
+
+            end)
+
+         end
+
+        end)
+
+      if achou == nil, do: Api.create_message(msg.channel_id, "Time não encontrado na API.")
 
     end
 
@@ -216,8 +258,6 @@ defmodule Discordbot.Consumer do
         all = values["All"]
 
         cases = all["confirmed"]
-
-        recovered = all["recovered"]
 
         deaths = all["deaths"]
 
