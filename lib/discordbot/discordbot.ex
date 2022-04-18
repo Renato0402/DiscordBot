@@ -78,7 +78,7 @@ defmodule Discordbot.Consumer do
 
       {:ok ,values} = Poison.decode(response.body)
 
-      exists = Enum.each(values, fn x ->
+      Enum.each(values, fn x ->
 
         if is_map(x) do
 
