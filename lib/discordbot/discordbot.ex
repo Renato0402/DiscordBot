@@ -100,11 +100,11 @@ defmodule Discordbot.Consumer do
 
          teamResponse = std["team"]
 
-         if teamResponse["name"] == String.capitalize(team) do
+         if teamResponse["name"] == team do
 
             Enum.each(teamResponse["logos"], fn logo ->
 
-              Api.create_message(msg.channel_id, "**#{String.capitalize(team)}**:")
+              Api.create_message(msg.channel_id, "**#{team}**:")
               Api.create_message(msg.channel_id, logo["href"])
 
             end)
@@ -340,7 +340,7 @@ defmodule Discordbot.Consumer do
 
       agente = Enum.fetch!(aux,1)
 
-      response = HTTPoison.get!("https://valorant-agents-maps-arsenal.p.rapidapi.com/agents/pt-br", [{"X-RapidAPI-Host", "valorant-agents-maps-arsenal.p.rapidapi.com"} , {"X-RapidAPI-Key", "51e1c6efeemshd72c905ddd7e1f8p17b9b9jsnfcb06362662e"}], params: [{"name", String.capitalize(agente)}])
+      response = HTTPoison.get!("https://valorant-agents-maps-arsenal.p.rapidapi.com/agents/pt-br", [{"X-RapidAPI-Host", "valorant-agents-maps-arsenal.p.rapidapi.com"} , {"X-RapidAPI-Key", "51e1c6efeemshd72c905ddd7e1f8p17b9b9jsnfcb06362662e"}], params: [{"name", agente}])
 
       {:ok ,values} = Poison.decode(response.body)
 
