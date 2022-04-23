@@ -1,6 +1,6 @@
 # Bot para Discord feito em Elixir
 
-## Como Validar o Bot no Discord
+### Como Validar o Bot no Discord
 
 Adicione o token do seu bot na variável `token` no arquivo `config-example.exs`
 
