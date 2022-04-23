@@ -30,7 +30,7 @@ defmodule Discordbot.Consumer do
 
         String.starts_with?(msg.content, "!nba ") -> nbaID(msg)
 
-        msg.content == "!nba" -> Api.create_message(msg.channel_id, "Use **!nba <nome do jogador> <sobrenome do jogador>** para descobir seus stats na temporada atual.")
+        msg.content == "!nba" -> Api.create_message(msg.channel_id, "Use **!nba <nome do jogador> <sobrenome do jogador>** para descobir os stats do jogador escolhido na temporada atual.")
 
         # API Valorant
 
@@ -60,16 +60,16 @@ defmodule Discordbot.Consumer do
 
         String.starts_with?(msg.content, "!fruits ") -> fruits(msg)
 
-        msg.content == "!fruits" -> Api.create_message(msg.channel_id, "Use **!dicionario <palavra em português>** para descobir o significado da palavra desejada.")
+        msg.content == "!fruits" -> Api.create_message(msg.channel_id, "Use **!fruits <nome da fruta em inglês>** para descobir a tabela nutricional da fruta desejada.")
 
         # API Brasileirão
 
         String.starts_with?(msg.content, "!brasileirao ") -> brasileirao(msg)
 
-        msg.content == "!brasileirao" -> Api.create_message(msg.channel_id, "Use **!brasileirao <nome do time da serie A>** para ver o escudo do time desejado.")
+        msg.content == "!brasileirao" -> Api.create_message(msg.channel_id, "Use **!brasileirao <nome do time da serie A>** para ver o escudo do time da série A desejado.")
 
         # Listar comandos existentes
-        msg.content == "!comandos" -> Api.create_message(msg.channel_id, "Os comandos existentes no bot são: **!gameprice**, **...**")
+        msg.content == "!comandos" -> Api.create_message(msg.channel_id, "Os comandos existentes no bot são: \n**!dicionario**, **!covid**, **!nba**, **!valorant**, **!gameprice**, **!rickmortyEP**, **!rickmortyCH**, **!fruits**, **!brasileirao**")
 
         # Caso Geral
         String.starts_with?(msg.content, "!") -> Api.create_message(msg.channel_id, "Comando inválido, tente novamente.")
