@@ -32,3 +32,5 @@ Utilize o comando `mix run --no-halt` no seu terminal para rodar o bot.
 
 `!brasileirao`: Para ver o escudo do time da série A desejado.
 
+`!music`: Para ver a letra da musica desejada.
+

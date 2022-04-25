@@ -68,14 +68,61 @@ defmodule Discordbot.Consumer do
 
         msg.content == "!brasileirao" -> Api.create_message(msg.channel_id, "Use **!brasileirao <nome do time da serie A>** para ver o escudo do time da série A desejado.")
 
+        # API Mobile
+
+        String.starts_with?(msg.content, "!music ") -> music(msg)
+
+        msg.content == "!music" -> Api.create_message(msg.channel_id, "Use **!music <nome do artista>/<nome da musica>** para ver a letra da musica desejada.")
+
         # Listar comandos existentes
-        msg.content == "!comandos" -> Api.create_message(msg.channel_id, "Os comandos existentes no bot são: \n**!dicionario**, **!covid**, **!nba**, **!valorant**, **!gameprice**, **!rickmortyEP**, **!rickmortyCH**, **!fruits**, **!brasileirao**")
+        msg.content == "!comandos" -> Api.create_message(msg.channel_id, "Os comandos existentes no bot são: \n**!dicionario**, **!covid**, **!nba**, **!valorant**, **!gameprice**, **!rickmortyEP**, **!rickmortyCH**, **!fruits**, **!brasileirao**, **!music**")
 
         # Caso Geral
         String.starts_with?(msg.content, "!") -> Api.create_message(msg.channel_id, "Comando inválido, tente novamente.")
 
         # Nada
         true -> :ignore
+
+      end
+
+    end
+
+    defp music(msg) do
+
+      # Quebrando em comando/parametros
+      aux = String.split(msg.content, " ", parts: 2)
+
+      songAndArtist = Enum.fetch!(aux,1)
+
+      songParameters = String.split(songAndArtist, "/")
+
+      artist = Enum.fetch!(songParameters,0)
+
+      song = Enum.fetch!(songParameters,1)
+
+      response = HTTPoison.get!("https://api.lyrics.ovh/v1/#{artist}/#{song}")
+
+      {:ok ,values} = Poison.decode(response.body)
+
+      if Map.has_key?(values, "lyrics") do
+
+        lyric = values["lyrics"]
+
+        lyric = treatLyric(lyric)
+
+        if String.length(lyric) > 2000 do
+
+          Api.create_message(msg.channel_id, "Sua música é grande demais. O Discord so suporta mensagens de ate 2000 caracteres.")
+
+        else
+
+          Api.create_message(msg.channel_id, "#{lyric}")
+
+        end
+
+      else
+
+        Api.create_message(msg.channel_id, "Musica ou artista não encontrado(a) na API")
 
       end
 
@@ -401,6 +448,16 @@ defmodule Discordbot.Consumer do
     data = values[to_string(id)]["data"]
     price = data["price_overview"]["final_formatted"]
     Api.create_message(msg.channel_id, "O preço do **#{name} é #{price} na Steam.**")
+
+  end
+
+  defp treatLyric(lyric) do
+
+    lyric = String.replace(lyric, "\n\n\n\n", "\r\n")
+
+    lyric = String.replace(lyric, "\n\n", "\r\n")
+
+    lyric
 
   end
 
