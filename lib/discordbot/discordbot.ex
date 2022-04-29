@@ -68,14 +68,26 @@ defmodule Discordbot.Consumer do
 
         msg.content == "!brasileirao" -> Api.create_message(msg.channel_id, "Use **!brasileirao <nome do time da serie A>** para ver o escudo do time da série A desejado.")
 
-        # API Mobile
+        # API Music
 
         String.starts_with?(msg.content, "!music ") -> music(msg)
 
         msg.content == "!music" -> Api.create_message(msg.channel_id, "Use **!music <nome do artista>/<nome da musica>** para ver a letra da musica desejada.")
 
+        # API Breaking Bad
+
+        String.starts_with?(msg.content, "!breakingbad ") -> breakingBad(msg)
+
+        msg.content == "!breakingbad" -> Api.create_message(msg.channel_id, "Use **!breakingbad <nome do personagem>** para ver detalhes do personagem.")
+
+        # API Marvel
+
+        String.starts_with?(msg.content, "!marvel ") -> marvel(msg)
+
+        msg.content == "!marvel" -> Api.create_message(msg.channel_id, "Use **!marvel <nome do personagem>** para ver detalhes do personagem.")
+
         # Listar comandos existentes
-        msg.content == "!comandos" -> Api.create_message(msg.channel_id, "Os comandos existentes no bot são: \n**!dicionario**, **!covid**, **!nba**, **!valorant**, **!gameprice**, **!rickmortyEP**, **!rickmortyCH**, **!fruits**, **!brasileirao**, **!music**")
+        msg.content == "!comandos" -> Api.create_message(msg.channel_id, "Os comandos existentes no bot são: \n**!dicionario**, **!covid**, **!nba**, **!valorant**, **!gameprice**, **!rickmortyEP**, **!rickmortyCH**, **!fruits**, **!brasileirao**, **!music**, **!breakingbad**")
 
         # Caso Geral
         String.starts_with?(msg.content, "!") -> Api.create_message(msg.channel_id, "Comando inválido, tente novamente.")
@@ -84,6 +96,66 @@ defmodule Discordbot.Consumer do
         true -> :ignore
 
       end
+
+    end
+
+    defp marvel(msg) do
+
+      # Quebrando em comando/parametros
+      aux = String.split(msg.content, " ", parts: 2)
+
+      character = Enum.fetch!(aux,1)
+
+      response = HTTPoison.get!("http://gateway.marvel.com/v1/public/characters?name=#{character}&ts=1&apikey=e9c7a30f27584adb073f458313eb757b&hash=22486d6ddc2dc0cd1b6d1810db39d200")
+
+      {:ok ,values} = Poison.decode(response.body)
+
+      results = values["data"]["results"]
+
+      achou = Enum.find_value(results, fn result ->
+
+        IO.puts(result)
+
+       end)
+
+     if achou == nil, do: Api.create_message(msg.channel_id, "Personagem não encontrado na API.")
+
+    end
+
+    defp breakingBad(msg) do
+
+      # Quebrando em comando/parametros
+      aux = String.split(msg.content, " ", parts: 2)
+
+      character = Enum.fetch!(aux,1)
+
+      response = HTTPoison.get!("https://www.breakingbadapi.com/api/characters")
+
+      {:ok ,values} = Poison.decode(response.body)
+
+      achou = Enum.find_value(values, fn value ->
+
+        characterName = value["name"]
+
+        if characterName == character do
+
+          Api.create_message(msg.channel_id, "**Apelido**: #{value["nickname"]}.")
+
+          Api.create_message(msg.channel_id, "**Ocupação**:")
+
+           Enum.each(value["occupation"], fn ocu ->
+
+            Api.create_message(msg.channel_id, "#{ocu}.")
+
+           end)
+
+          Api.create_message(msg.channel_id, "**Foto**: #{value["img"]}.")
+
+        end
+
+       end)
+
+     if achou == nil, do: Api.create_message(msg.channel_id, "Personagem não encontrado na API.")
 
     end
 

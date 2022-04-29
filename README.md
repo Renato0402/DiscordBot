@@ -34,3 +34,5 @@ Utilize o comando `mix run --no-halt` no seu terminal para rodar o bot.
 
 `!music`: Para ver a letra da musica desejada.
 
+`!breakingbad`: Para ver detalhes do personagem desejado.
+
