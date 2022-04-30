@@ -1,11 +1,5 @@
 # Bot para Discord feito em Elixir
 
-## Equipe de Desenvolvimento
-
-Victor Torres de Melo Oliveira
-
-Renato Vidal Moura
-
 ## Como Validar o Bot no Discord
 
 Adicione o token do seu bot na variável `token` no arquivo `config-example.exs`
@@ -43,4 +37,10 @@ Utilize o comando `mix run --no-halt` no seu terminal para rodar o bot.
 `!breakingbad`: Para ver detalhes do personagem desejado.
 
 `!facts`: Para descobrir um fato aleatório.
+
+## Equipe de Desenvolvimento
+
+Victor Torres de Melo Oliveira
+
+Renato Vidal Moura
 
