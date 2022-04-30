@@ -12,8 +12,6 @@ defmodule Discordbot.Consumer do
 
       cond do
 
-        # COMANDOS
-
         # API Dicionário
 
         String.starts_with?(msg.content, "!dicionario ") -> dicionario(msg)
@@ -80,14 +78,12 @@ defmodule Discordbot.Consumer do
 
         msg.content == "!breakingbad" -> Api.create_message(msg.channel_id, "Use **!breakingbad <nome do personagem>** para ver detalhes do personagem.")
 
-        # API Marvel
+        # API Facts
 
-        String.starts_with?(msg.content, "!marvel ") -> marvel(msg)
-
-        msg.content == "!marvel" -> Api.create_message(msg.channel_id, "Use **!marvel <nome do personagem>** para ver detalhes do personagem.")
+        msg.content == "!facts" -> facts(msg)
 
         # Listar comandos existentes
-        msg.content == "!comandos" -> Api.create_message(msg.channel_id, "Os comandos existentes no bot são: \n**!dicionario**, **!covid**, **!nba**, **!valorant**, **!gameprice**, **!rickmortyEP**, **!rickmortyCH**, **!fruits**, **!brasileirao**, **!music**, **!breakingbad**")
+        msg.content == "!comandos" -> Api.create_message(msg.channel_id, "Os comandos existentes no bot são: \n**!dicionario**, **!covid**, **!nba**, **!valorant**, **!gameprice**, **!rickmortyEP**, **!rickmortyCH**, **!fruits**, **!brasileirao**, **!music**, **!breakingbad**, **!facts**")
 
         # Caso Geral
         String.starts_with?(msg.content, "!") -> Api.create_message(msg.channel_id, "Comando inválido, tente novamente.")
@@ -99,26 +95,15 @@ defmodule Discordbot.Consumer do
 
     end
 
-    defp marvel(msg) do
+    defp facts(msg) do
 
-      # Quebrando em comando/parametros
-      aux = String.split(msg.content, " ", parts: 2)
-
-      character = Enum.fetch!(aux,1)
-
-      response = HTTPoison.get!("http://gateway.marvel.com/v1/public/characters?name=#{character}&ts=1&apikey=e9c7a30f27584adb073f458313eb757b&hash=22486d6ddc2dc0cd1b6d1810db39d200")
+      response = HTTPoison.get!("https://uselessfacts.jsph.pl/random.json?language=en")
 
       {:ok ,values} = Poison.decode(response.body)
 
-      results = values["data"]["results"]
+      fact = values["text"]
 
-      achou = Enum.find_value(results, fn result ->
-
-        IO.puts(result)
-
-       end)
-
-     if achou == nil, do: Api.create_message(msg.channel_id, "Personagem não encontrado na API.")
+      Api.create_message(msg.channel_id, "**Fact**: #{fact}")
 
     end
 

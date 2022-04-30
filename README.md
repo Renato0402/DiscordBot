@@ -36,3 +36,5 @@ Utilize o comando `mix run --no-halt` no seu terminal para rodar o bot.
 
 `!breakingbad`: Para ver detalhes do personagem desejado.
 
+`!facts`: Para descobrir um fato aleatório.
+
