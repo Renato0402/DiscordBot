@@ -151,35 +151,43 @@ defmodule Discordbot.Consumer do
 
       songAndArtist = Enum.fetch!(aux,1)
 
-      songParameters = String.split(songAndArtist, "/")
+      try do
 
-      artist = Enum.fetch!(songParameters,0)
+        songParameters = String.split(songAndArtist, "/")
 
-      song = Enum.fetch!(songParameters,1)
+        artist = Enum.fetch!(songParameters,0)
 
-      response = HTTPoison.get!("https://api.lyrics.ovh/v1/#{artist}/#{song}")
+        song = Enum.fetch!(songParameters,1)
 
-      {:ok ,values} = Poison.decode(response.body)
+        response = HTTPoison.get!("https://api.lyrics.ovh/v1/#{artist}/#{song}")
 
-      if Map.has_key?(values, "lyrics") do
+        {:ok ,values} = Poison.decode(response.body)
 
-        lyric = values["lyrics"]
+        if Map.has_key?(values, "lyrics") do
 
-        lyric = treatLyric(lyric)
+          lyric = values["lyrics"]
 
-        if String.length(lyric) > 2000 do
+          lyric = treatLyric(lyric)
 
-          Api.create_message(msg.channel_id, "Sua música é grande demais. O Discord so suporta mensagens de ate 2000 caracteres.")
+          if String.length(lyric) > 2000 do
+
+            Api.create_message(msg.channel_id, "Sua música é grande demais. O Discord so suporta mensagens de ate 2000 caracteres.")
+
+          else
+
+            Api.create_message(msg.channel_id, "#{lyric}")
+
+          end
 
         else
 
-          Api.create_message(msg.channel_id, "#{lyric}")
+          Api.create_message(msg.channel_id, "Musica ou artista não encontrado(a) na API")
 
         end
 
-      else
+      rescue
 
-        Api.create_message(msg.channel_id, "Musica ou artista não encontrado(a) na API")
+        Enum.OutOfBoundsError -> Api.create_message(msg.channel_id, "Comando Invalido!")
 
       end
 
